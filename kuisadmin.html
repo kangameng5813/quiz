@@ -447,6 +447,10 @@
           container.appendChild(div);
           i++;
         });
+
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          MathJax.typesetPromise();
+        }
       });
     }
 
@@ -515,12 +519,16 @@
     }
 
     function renderSoalAdmin(soal) {
-      document.getElementById('adminPertanyaan').innerText = soal.pertanyaan;
-      document.getElementById('txtA').innerText = soal.a;
-      document.getElementById('txtB').innerText = soal.b;
-      document.getElementById('txtC').innerText = soal.c;
-      document.getElementById('txtD').innerText = soal.d;
-      document.getElementById('txtE').innerText = soal.e;
+      document.getElementById('adminPertanyaan').innerHTML = soal.pertanyaan;
+      document.getElementById('txtA').innerHTML = soal.a;
+      document.getElementById('txtB').innerHTML = soal.b;
+      document.getElementById('txtC').innerHTML = soal.c;
+      document.getElementById('txtD').innerHTML = soal.d;
+      document.getElementById('txtE').innerHTML = soal.e;
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
     }
 
     function startAdminTimer(startTimestamp, durasiSoal) {
