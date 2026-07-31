@@ -268,12 +268,16 @@
       document.getElementById('screenLobby').classList.add('hidden');
       document.getElementById('screenSoal').classList.remove('hidden');
 
-      document.getElementById('clientPertanyaan').innerText = soal.pertanyaan;
-      document.getElementById('textA').innerText = soal.a;
-      document.getElementById('textB').innerText = soal.b;
-      document.getElementById('textC').innerText = soal.c;
-      document.getElementById('textD').innerText = soal.d;
-      document.getElementById('textE').innerText = soal.e;
+      document.getElementById('clientPertanyaan').innerHTML = soal.pertanyaan;
+      document.getElementById('textA').innerHTML = soal.a;
+      document.getElementById('textB').innerHTML = soal.b;
+      document.getElementById('textC').innerHTML = soal.c;
+      document.getElementById('textD').innerHTML = soal.d;
+      document.getElementById('textE').innerHTML = soal.e;
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
     }
 
     function startClientTimer(startTimestamp, durasiSoal) {
