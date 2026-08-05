@@ -8,13 +8,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['\\(', '\\)'], ['$', '$']] // Mendukung format \( ... \) dan $ ... $
-    }
-  };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen font-sans p-4 md:p-6">
 
@@ -232,21 +232,24 @@
     let timerInterval = null;
     let isEvaluated = false;
     let currentSoalAktif = null;
+    let serverTimeOffset = 0; // Selisih waktu Admin dengan Server Firebase
 
-    // PASSWORD DEFAULT JIKA FIREBASE BELUM DINETAPKAN
     const DEFAULT_PASS = "admin123"; 
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.database();
 
-      // Cek Sesi Login di LocalStorage
+      // Dapatkan selisih waktu presisi dengan server
+      db.ref('.info/serverTimeOffset').on('value', (snap) => {
+        serverTimeOffset = snap.val() || 0;
+      });
+
       if (localStorage.getItem('admin_logged_in') === 'true') {
         masukKeDashboard();
       }
     });
 
-    // --- LOGIKA PASSWORD & AUTHENTICATION ---
     function verifikasiPassword(e) {
       e.preventDefault();
       const inp = document.getElementById('inpPassAdmin').value;
@@ -255,7 +258,6 @@
       db.ref('admin_config/password').once('value', (snapshot) => {
         let passDB = snapshot.val();
         
-        // Jika password di DB belum ada, set password default
         if (!passDB) {
           passDB = DEFAULT_PASS;
           db.ref('admin_config/password').set(DEFAULT_PASS);
@@ -275,7 +277,6 @@
       document.getElementById('screenLoginAdmin').classList.add('hidden');
       document.getElementById('mainDashboard').classList.remove('hidden');
 
-      // Jalankan Listener Firebase setelah login
       listenPesertaRealtime();
       listenBankSoal();
       listenKuisAktif();
@@ -295,7 +296,6 @@
       }
     }
 
-    // --- FITUR REALTIME KUIS ---
     function listenPesertaRealtime() {
       db.ref('peserta').orderByChild('skor').on('value', (snapshot) => {
         const container = document.getElementById('containerLeaderboard');
@@ -491,10 +491,13 @@
               });
             }
 
+            // Gunakan Waktu Server Firebase untuk timestamp
+            const serverNow = Date.now() + serverTimeOffset;
+
             db.ref('kuis_aktif').set({
               status: 'mulai_soal',
               soalIndex: nextIndex,
-              soal: { ...selectedSoal, timestamp: Date.now() }
+              soal: { ...selectedSoal, timestamp: serverNow }
             });
           });
         });
@@ -542,8 +545,9 @@
       statusBadge.className = "text-sm font-extrabold text-emerald-400";
 
       const updateTimer = () => {
-        const now = Date.now();
-        const elapsed = Math.floor((now - startTimestamp) / 1000);
+        // Menggunakan waktu presisi Server Firebase
+        const nowServer = Date.now() + serverTimeOffset;
+        const elapsed = Math.floor((nowServer - startTimestamp) / 1000);
         const remaining = durasiSoal - elapsed;
 
         if (remaining > 0) {
@@ -558,10 +562,11 @@
           if (!isEvaluated) {
             isEvaluated = true;
             infoPenilaian.innerText = "⏳ Menghitung skor peserta...";
+            // Jeda 3.5 detik untuk memastikan semua jawaban Client sudah terkirim via internet
             setTimeout(() => {
               evaluasiJawaban();
               infoPenilaian.innerText = "✅ Skor peserta berhasil diperbarui!";
-            }, 1500);
+            }, 3500);
           }
         }
       };
