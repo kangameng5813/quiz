@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Kuis Interaktif</title>
+  <title>HOTS QUIZ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['\\(', '\\)'], ['$', '$']] // Mendukung format \( ... \) dan $ ... $
-    }
-  };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     @keyframes pulse-slow {
       0%, 100% { transform: scale(1); }
@@ -29,117 +29,117 @@
     .animate-pop-in { animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
   </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen font-sans p-4 flex items-center justify-center">
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans p-4 flex items-center justify-center">
 
   <div class="w-full max-w-xl mx-auto">
 
     <!-- LOGIN -->
-    <div id="screenLogin" class="bg-slate-800 rounded-2xl p-6 border-2 border-slate-700 shadow-2xl">
-      <h1 class="text-xl font-black text-amber-400 text-center mb-4">MASUK KUIS INTERAKTIF</h1>
+    <div id="screenLogin" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl">
+      <h1 class="text-xl font-black text-indigo-600 text-center mb-4">MASUK KUIS INTERAKTIF</h1>
       <form onsubmit="masukKuis(event)" class="space-y-4">
-        <input type="text" id="inpNama" required placeholder="Masukkan Nama Lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-amber-400 focus:outline-none">
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-xl shadow-lg transition text-sm">
+        <input type="text" id="inpNama" required placeholder="Masukkan Nama Lengkap" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none transition">
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 rounded-xl shadow-lg transition text-sm">
           BERGABUNG 🚀
         </button>
       </form>
     </div>
 
     <!-- LOBBY -->
-    <div id="screenLobby" class="hidden bg-slate-800 rounded-2xl p-8 border-2 border-slate-700 text-center shadow-2xl">
+    <div id="screenLobby" class="hidden bg-white rounded-2xl p-8 border border-slate-200 text-center shadow-xl">
       <div class="text-3xl mb-2">⏳</div>
-      <h2 class="text-lg font-extrabold text-amber-400 mb-1">Halo, <span id="displayName" class="text-white">Peserta</span>!</h2>
-      <p class="text-slate-400 text-xs mb-4">Menunggu Admin merilis soal berikutnya...</p>
-      <div class="bg-slate-900 p-3 rounded-xl inline-block border border-slate-700">
-        <span class="text-[10px] text-slate-400 block">Skor Anda</span>
-        <span id="displaySkorLobby" class="text-xl font-black text-amber-400">0</span>
+      <h2 class="text-lg font-extrabold text-indigo-600 mb-1">Halo, <span id="displayName" class="text-slate-900">Peserta</span>!</h2>
+      <p class="text-slate-500 text-xs mb-4">Menunggu Admin merilis soal berikutnya...</p>
+      <div class="bg-slate-100 p-3 rounded-xl inline-block border border-slate-200">
+        <span class="text-[10px] text-slate-500 block font-semibold">Skor Anda</span>
+        <span id="displaySkorLobby" class="text-xl font-black text-amber-500">0</span>
       </div>
     </div>
 
     <!-- SOAL & JAWABAN CLIENT -->
-    <div id="screenSoal" class="hidden bg-slate-800 rounded-2xl p-5 border-2 border-amber-500/40 shadow-2xl relative overflow-hidden">
+    <div id="screenSoal" class="hidden bg-white rounded-2xl p-5 border border-slate-200 shadow-xl relative overflow-hidden">
       
       <!-- NOTIFIKASI POPUP HASIL (BENAR/SALAH) -->
-      <div id="notifHasil" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center animate-pop-in">
+      <div id="notifHasil" class="hidden absolute inset-0 bg-white/95 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center animate-pop-in">
         <div id="notifIcon" class="text-6xl mb-2">🎉</div>
-        <h3 id="notifJudul" class="text-2xl font-black mb-1 text-emerald-400">JAWABAN BENAR!</h3>
-        <p id="notifPesan" class="text-xs text-slate-300 mb-4">Anda berhasil mendapatkan poin.</p>
+        <h3 id="notifJudul" class="text-2xl font-black mb-1 text-emerald-600">JAWABAN BENAR!</h3>
+        <p id="notifPesan" class="text-xs text-slate-600 mb-4">Anda berhasil mendapatkan poin.</p>
         
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 w-full max-w-xs space-y-2 mb-4">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 w-full max-w-xs space-y-2 mb-4">
           <div class="flex justify-between items-center text-xs">
-            <span class="text-slate-400">Kunci Jawaban:</span>
-            <span id="notifKunci" class="font-bold text-amber-400 uppercase">A</span>
+            <span class="text-slate-500">Kunci Jawaban:</span>
+            <span id="notifKunci" class="font-bold text-amber-600 uppercase">A</span>
           </div>
           <div class="flex justify-between items-center text-xs">
-            <span class="text-slate-400">Perubahan Skor:</span>
-            <span id="notifPoin" class="font-black text-emerald-400">+10 Poin</span>
+            <span class="text-slate-500">Perubahan Skor:</span>
+            <span id="notifPoin" class="font-black text-emerald-600">+10 Poin</span>
           </div>
-          <div class="border-t border-slate-800 pt-2 flex justify-between items-center text-sm font-bold">
-            <span class="text-slate-300">Total Skor Sekarang:</span>
-            <span id="notifTotalSkor" class="text-amber-400 font-mono text-base">0</span>
+          <div class="border-t border-slate-200 pt-2 flex justify-between items-center text-sm font-bold">
+            <span class="text-slate-700">Total Skor Sekarang:</span>
+            <span id="notifTotalSkor" class="text-amber-500 font-mono text-base">0</span>
           </div>
         </div>
 
-        <span class="text-[10px] text-slate-500 italic">Tunggu Admin merilis soal berikutnya...</span>
+        <span class="text-[10px] text-slate-400 italic">Tunggu Admin merilis soal berikutnya...</span>
       </div>
 
       <!-- HEADER CLIENT -->
-      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
         <div>
-          <span id="clientNama" class="text-xs font-bold text-amber-400 block">Peserta</span>
-          <span class="text-[10px] text-slate-400">Skor: <b id="clientSkor" class="text-white">0</b></span>
+          <span id="clientNama" class="text-xs font-bold text-indigo-600 block">Peserta</span>
+          <span class="text-[10px] text-slate-500">Skor: <b id="clientSkor" class="text-slate-900">0</b></span>
         </div>
-        <div class="bg-amber-500/20 border border-amber-400 px-3 py-1 rounded-xl text-center">
-          <span class="text-[8px] text-amber-300 font-bold block leading-none">SISA WAKTU</span>
-          <span id="clientTimer" class="text-lg font-black text-amber-400 font-mono leading-none animate-pulse-slow">0s</span>
+        <div class="bg-amber-50 border border-amber-300 px-3 py-1 rounded-xl text-center">
+          <span class="text-[8px] text-amber-700 font-bold block leading-none">SISA WAKTU</span>
+          <span id="clientTimer" class="text-lg font-black text-amber-600 font-mono leading-none animate-pulse-slow">0s</span>
         </div>
       </div>
 
       <!-- PERTANYAAN -->
-      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-700 mb-4">
-        <p id="clientPertanyaan" class="text-sm md:text-base font-bold text-slate-100 leading-relaxed">
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
+        <p id="clientPertanyaan" class="text-sm md:text-base font-bold text-slate-800 leading-relaxed">
           Memuat pertanyaan...
         </p>
       </div>
 
       <!-- GRID 2 KOLOM (A-B, C-D, E DI BAWAH) -->
       <div class="grid grid-cols-2 gap-2.5 mb-3">
-        <button onclick="pilihJawaban('a')" id="btnA" class="col-span-1 bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
+        <button onclick="pilihJawaban('a')" id="btnA" class="col-span-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0">A</span>
-            <span id="textA" class="text-xs font-semibold text-slate-200">-</span>
+            <span id="textA" class="text-xs font-semibold text-slate-700">-</span>
           </div>
         </button>
 
-        <button onclick="pilihJawaban('b')" id="btnB" class="col-span-1 bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
+        <button onclick="pilihJawaban('b')" id="btnB" class="col-span-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded bg-emerald-600 text-white font-bold flex items-center justify-center text-xs shrink-0">B</span>
-            <span id="textB" class="text-xs font-semibold text-slate-200">-</span>
+            <span id="textB" class="text-xs font-semibold text-slate-700">-</span>
           </div>
         </button>
 
-        <button onclick="pilihJawaban('c')" id="btnC" class="col-span-1 bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
+        <button onclick="pilihJawaban('c')" id="btnC" class="col-span-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
           <div class="flex items-center gap-2">
-            <span class="w-6 h-6 rounded bg-amber-600 text-white font-bold flex items-center justify-center text-xs shrink-0">C</span>
-            <span id="textC" class="text-xs font-semibold text-slate-200">-</span>
+            <span class="w-6 h-6 rounded bg-amber-500 text-white font-bold flex items-center justify-center text-xs shrink-0">C</span>
+            <span id="textC" class="text-xs font-semibold text-slate-700">-</span>
           </div>
         </button>
 
-        <button onclick="pilihJawaban('d')" id="btnD" class="col-span-1 bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
+        <button onclick="pilihJawaban('d')" id="btnD" class="col-span-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded bg-purple-600 text-white font-bold flex items-center justify-center text-xs shrink-0">D</span>
-            <span id="textD" class="text-xs font-semibold text-slate-200">-</span>
+            <span id="textD" class="text-xs font-semibold text-slate-700">-</span>
           </div>
         </button>
 
-        <button onclick="pilihJawaban('e')" id="btnE" class="col-span-2 bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
+        <button onclick="pilihJawaban('e')" id="btnE" class="col-span-2 bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left transition active:scale-95">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded bg-rose-600 text-white font-bold flex items-center justify-center text-xs shrink-0">E</span>
-            <span id="textE" class="text-xs font-semibold text-slate-200">-</span>
+            <span id="textE" class="text-xs font-semibold text-slate-700">-</span>
           </div>
         </button>
       </div>
 
-      <div id="statusJawaban" class="text-center text-[11px] text-slate-400 italic">
+      <div id="statusJawaban" class="text-center text-[11px] text-slate-500 italic">
         Pilih jawaban (Bisa diubah sampai waktu habis).
       </div>
     </div>
@@ -162,10 +162,16 @@
     let isTimeUp = false;
     let currentSoalData = null;
     let lastSkor = 0;
+    let serverTimeOffset = 0;
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.database();
+
+      // Hitung selisih waktu presisi dengan server Firebase
+      db.ref('.info/serverTimeOffset').on('value', (snap) => {
+        serverTimeOffset = snap.val() || 0;
+      });
 
       if (pesertaId && pesertaNama) {
         tampilkanLobby();
@@ -216,14 +222,12 @@
       document.getElementById('inpNama').value = '';
     }
 
-    // LISTENER DATA PESERTA (DETEKSI JIKA PESERTA DI-RESET ADMIN)
     function listenSkorPeserta() {
       if (!pesertaId) return;
       
       db.ref('peserta/' + pesertaId).on('value', (snapshot) => {
         const data = snapshot.val();
         
-        // JIKA ADMIN MERESET/MENGHAPUS DATA PESERTA DARI FIREBASE:
         if (!data) {
           tampilkanLogin();
           return;
@@ -284,8 +288,8 @@
       clearInterval(timerInterval);
 
       const updateTimer = () => {
-        const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTimestamp) / 1000);
+        const nowServer = Date.now() + serverTimeOffset;
+        const elapsedSeconds = Math.floor((nowServer - startTimestamp) / 1000);
         const remaining = durasiSoal - elapsedSeconds;
 
         const timerDisplay = document.getElementById('clientTimer');
@@ -297,7 +301,12 @@
           if (!isTimeUp) {
             isTimeUp = true;
             disableAllButtons(true);
-            kirimJawabanAkhirKeFirebase(); 
+            document.getElementById('statusJawaban').innerText = "Waktu habis! Menghitung nilai...";
+            document.getElementById('statusJawaban').className = "text-center text-[11px] text-rose-600 font-bold";
+            
+            setTimeout(() => {
+              tampilkanNotifikasiHasil();
+            }, 2500);
           }
           clearInterval(timerInterval);
         }
@@ -308,7 +317,7 @@
     }
 
     function pilihJawaban(pilihan) {
-      if (isTimeUp) return;
+      if (isTimeUp || !pesertaId) return;
 
       selectedJawaban = pilihan;
 
@@ -316,28 +325,17 @@
       buttons.forEach(key => {
         const btn = document.getElementById('btn' + key.toUpperCase());
         if (key === pilihan) {
-          btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-amber-500/20 border-2 border-amber-400 rounded-xl p-2.5 flex items-center justify-between text-left shadow-lg scale-[1.02] transition";
+          btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-amber-50 border-2 border-amber-500 rounded-xl p-2.5 flex items-center justify-between text-left shadow-md scale-[1.02] transition";
         } else {
-          btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-slate-700/30 border border-slate-700/60 rounded-xl p-2.5 flex items-center justify-between text-left opacity-50 transition";
+          btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-slate-50 border border-slate-200 opacity-60 rounded-xl p-2.5 flex items-center justify-between text-left transition";
         }
       });
 
-      document.getElementById('statusJawaban').innerText = `Pilihan saat ini: (${pilihan.toUpperCase()}) - Bisa diubah sebelum waktu habis.`;
-      document.getElementById('statusJawaban').className = "text-center text-[11px] text-amber-400 font-bold";
-    }
-
-    function kirimJawabanAkhirKeFirebase() {
-      if (!pesertaId) return;
+      document.getElementById('statusJawaban').innerText = `Pilihan saat ini: (${pilihan.toUpperCase()}) - Tersimpan otomatis.`;
+      document.getElementById('statusJawaban').className = "text-center text-[11px] text-amber-600 font-bold";
 
       db.ref('peserta/' + pesertaId).update({
         jawaban_sementara: selectedJawaban
-      }).then(() => {
-        document.getElementById('statusJawaban').innerText = "Waktu habis! Menghitung nilai...";
-        document.getElementById('statusJawaban').className = "text-center text-[11px] text-rose-400 font-bold";
-        
-        setTimeout(() => {
-          tampilkanNotifikasiHasil();
-        }, 1800);
       });
     }
 
@@ -361,19 +359,19 @@
       if (isBenar) {
         notifIcon.innerText = "🎉";
         notifJudul.innerText = "JAWABAN BENAR!";
-        notifJudul.className = "text-2xl font-black mb-1 text-emerald-400";
+        notifJudul.className = "text-2xl font-black mb-1 text-emerald-600";
         notifPesan.innerText = "Selamat, pilihan Anda tepat!";
         notifPoin.innerText = `+${currentSoalData.poin_benar} Poin`;
-        notifPoin.className = "font-black text-emerald-400";
+        notifPoin.className = "font-black text-emerald-600";
       } else {
         notifIcon.innerText = "❌";
         notifJudul.innerText = "JAWABAN SALAH!";
-        notifJudul.className = "text-2xl font-black mb-1 text-rose-500";
+        notifJudul.className = "text-2xl font-black mb-1 text-rose-600";
         notifPesan.innerText = selectedJawaban 
           ? `Anda memilih (${selectedJawaban.toUpperCase()}). Kunci yang benar adalah (${kunci.toUpperCase()}).`
           : `Anda tidak menjawab. Kunci yang benar adalah (${kunci.toUpperCase()}).`;
         notifPoin.innerText = `-${currentSoalData.poin_salah || 0} Poin`;
-        notifPoin.className = "font-black text-rose-500";
+        notifPoin.className = "font-black text-rose-600";
       }
 
       notifBox.classList.remove('hidden');
@@ -386,11 +384,11 @@
       buttons.forEach(key => {
         const btn = document.getElementById('btn' + key.toUpperCase());
         btn.disabled = false;
-        btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-slate-700/60 border border-slate-600 rounded-xl p-2.5 flex items-center justify-between text-left active:scale-95";
+        btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left active:scale-95";
       });
 
       document.getElementById('statusJawaban').innerText = "Pilih jawaban (Bisa diubah sampai waktu habis).";
-      document.getElementById('statusJawaban').className = "text-center text-[11px] text-slate-400 italic";
+      document.getElementById('statusJawaban').className = "text-center text-[11px] text-slate-500 italic";
     }
 
     function disableAllButtons(disabled) {
