@@ -16,12 +16,6 @@
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    @keyframes pulse-slow {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    .animate-pulse-slow { animation: pulse-slow 1.5s infinite; }
-    
     @keyframes pop-in {
       0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -88,9 +82,9 @@
           <span id="clientNama" class="text-xs font-bold text-indigo-600 block">Peserta</span>
           <span class="text-[10px] text-slate-500">Skor: <b id="clientSkor" class="text-slate-900">0</b></span>
         </div>
-        <div class="bg-amber-50 border border-amber-300 px-3 py-1 rounded-xl text-center">
-          <span class="text-[8px] text-amber-700 font-bold block leading-none">SISA WAKTU</span>
-          <span id="clientTimer" class="text-lg font-black text-amber-600 font-mono leading-none animate-pulse-slow">0s</span>
+        <div class="bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl text-center">
+          <span class="text-[9px] text-indigo-600 font-bold block leading-none">STATUS KUIS</span>
+          <span class="text-xs font-bold text-indigo-700 leading-none">Berlangsung ⚡</span>
         </div>
       </div>
 
@@ -140,7 +134,7 @@
       </div>
 
       <div id="statusJawaban" class="text-center text-[11px] text-slate-500 italic">
-        Pilih jawaban (Bisa diubah sampai waktu habis).
+        Pilih jawaban (Bisa diubah sewaktu-waktu).
       </div>
     </div>
 
@@ -157,7 +151,7 @@
     let pesertaId = localStorage.getItem('kuis_peserta_id') || null;
     let pesertaNama = localStorage.getItem('kuis_peserta_nama') || '';
     let selectedJawaban = null; 
-    let timerInterval = null;
+    let monitorTimerInterval = null;
     let currentTimestampSoal = null;
     let isTimeUp = false;
     let currentSoalData = null;
@@ -249,7 +243,7 @@
       db.ref('kuis_aktif').on('value', (snapshot) => {
         const val = snapshot.val();
         if (!val || val.status !== 'mulai_soal' || !val.soal) {
-          clearInterval(timerInterval);
+          clearInterval(monitorTimerInterval);
           if (pesertaId) tampilkanLobby();
           return;
         }
@@ -263,7 +257,7 @@
         }
 
         renderSoalClient(val.soal);
-        startClientTimer(val.soal.timestamp, val.soal.timer);
+        monitorClientTimer(val.soal.timestamp, val.soal.timer);
       });
     }
 
@@ -284,20 +278,15 @@
       }
     }
 
-    function startClientTimer(startTimestamp, durasiSoal) {
-      clearInterval(timerInterval);
+    function monitorClientTimer(startTimestamp, durasiSoal) {
+      clearInterval(monitorTimerInterval);
 
-      const updateTimer = () => {
+      const checkTime = () => {
         const nowServer = Date.now() + serverTimeOffset;
         const elapsedSeconds = Math.floor((nowServer - startTimestamp) / 1000);
         const remaining = durasiSoal - elapsedSeconds;
 
-        const timerDisplay = document.getElementById('clientTimer');
-
-        if (remaining > 0) {
-          timerDisplay.innerText = remaining + "s";
-        } else {
-          timerDisplay.innerText = "0s";
+        if (remaining <= 0) {
           if (!isTimeUp) {
             isTimeUp = true;
             disableAllButtons(true);
@@ -308,12 +297,12 @@
               tampilkanNotifikasiHasil();
             }, 2500);
           }
-          clearInterval(timerInterval);
+          clearInterval(monitorTimerInterval);
         }
       };
 
-      updateTimer();
-      timerInterval = setInterval(updateTimer, 1000);
+      checkTime();
+      monitorTimerInterval = setInterval(checkTime, 1000);
     }
 
     function pilihJawaban(pilihan) {
@@ -387,7 +376,7 @@
         btn.className = (key === 'e' ? 'col-span-2' : 'col-span-1') + " bg-slate-100 hover:bg-slate-200/80 border border-slate-300 rounded-xl p-2.5 flex items-center justify-between text-left active:scale-95";
       });
 
-      document.getElementById('statusJawaban').innerText = "Pilih jawaban (Bisa diubah sampai waktu habis).";
+      document.getElementById('statusJawaban').innerText = "Pilih jawaban (Bisa diubah sewaktu-waktu).";
       document.getElementById('statusJawaban').className = "text-center text-[11px] text-slate-500 italic";
     }
 
