@@ -16,172 +16,185 @@
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen font-sans p-4 md:p-6">
+<body class="bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 text-slate-800 min-h-screen font-sans p-4 md:p-6">
+
+  <!-- Audio element for ticking sound in the last 5 seconds -->
+  <audio id="audioDetik" src="detik.mp3" preload="auto"></audio>
 
   <!-- ==================== MODAL/SCREEN LOGIN ADMIN ==================== -->
-  <div id="screenLoginAdmin" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 border-2 border-amber-500/50 p-6 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+  <div id="screenLoginAdmin" class="fixed inset-0 bg-blue-950/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-blue-200 p-6 rounded-3xl w-full max-w-md shadow-2xl space-y-5">
       <div class="text-center">
-        <div class="text-4xl mb-2">🔒</div>
-        <h2 class="text-xl font-black text-amber-400">OOPS!! LOGIN DULU</h2>
-        <p class="text-xs text-slate-400">Masukkan kata sandi untuk mengelola kuis</p>
+        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 shadow-inner">
+          🔒
+        </div>
+        <h2 class="text-xl font-black text-blue-900">PANEL ADMIN KUIS</h2>
+        <p class="text-xs text-slate-500 mt-1">Masukkan kata sandi untuk mengelola kuis</p>
       </div>
 
-      <form onsubmit="verifikasiPassword(event)" class="space-y-3">
+      <form onsubmit="verifikasiPassword(event)" class="space-y-4">
         <div>
-          <input type="password" id="inpPassAdmin" required placeholder="Masukkan Password Admin" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-center font-bold text-white focus:border-amber-400 focus:outline-none tracking-widest">
+          <input type="password" id="inpPassAdmin" required placeholder="Masukkan Password Admin" class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3.5 text-sm text-center font-bold text-slate-800 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none tracking-widest transition">
         </div>
         <p id="errPass" class="text-xs text-rose-500 font-bold text-center hidden">❌ Password salah! Silakan coba lagi.</p>
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-xl transition text-sm shadow-lg">
-          MASUK DASHBOARD 🔓
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-500/30 text-sm flex items-center justify-center gap-2">
+          <span>MASUK DASHBOARD</span> 🔓
         </button>
       </form>
     </div>
   </div>
 
   <!-- ==================== DASHBOARD UTAMA ADMIN ==================== -->
-  <div id="mainDashboard" class="hidden max-w-[1400px] mx-auto space-y-5">
+  <div id="mainDashboard" class="hidden max-w-[1400px] mx-auto space-y-6">
 
     <!-- HEADER ADMIN -->
-    <div class="flex flex-wrap justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl gap-3">
-      <div>
-        <h1 class="text-xl font-black text-amber-400">GURU-SMANJ.BLOGSPOT.COM</h1>
-        <p class="text-xs text-slate-400">Oleh : AMIRUDIN, S.Kom</p>
+    <div class="flex flex-wrap justify-between items-center bg-white p-5 rounded-3xl border border-blue-100 shadow-xl shadow-blue-500/5 gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white font-black flex items-center justify-center text-lg shadow-md shadow-blue-500/20">
+          🎓
+        </div>
+        <div>
+          <h1 class="text-lg font-black text-blue-900 tracking-tight">GURU-SMANJ.BLOGSPOT.COM</h1>
+          <p class="text-xs text-slate-500 font-medium">Oleh : AMIRUDIN, S.Kom</p>
+        </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="bukaModalGantiPass()" class="bg-amber-500/20 border border-amber-500 text-amber-300 hover:bg-amber-500 hover:text-slate-950 px-3 py-2 rounded-xl text-xs font-bold transition">
+        <button onclick="bukaModalGantiPass()" class="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
           🔑 Ganti Pass
         </button>
-        <button onclick="resetSemuaPeserta()" class="bg-rose-600/20 border border-rose-500 text-rose-300 hover:bg-rose-600 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition">
+        <button onclick="resetSemuaPeserta()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
           🗑️ Reset Peserta
         </button>
-        <button onclick="logoutAdmin()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition">
+        <button onclick="logoutAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
           🚪 Keluar
         </button>
       </div>
     </div>
 
     <!-- UTAMA: 2 KOLOM (ATAS) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- CARD KIRI (LEBAR): TAMPILAN SOAL AKTIF & TOMBOL LANJUT -->
-      <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between min-h-[420px]">
+      <div class="lg:col-span-2 bg-white p-6 md:p-7 rounded-3xl border border-blue-100 shadow-xl shadow-blue-500/5 flex flex-col justify-between min-h-[440px]">
         <div>
           <!-- STATUS & TIMER HEADER -->
-          <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700">
+          <div class="flex justify-between items-center pb-4 mb-5 border-b border-slate-100">
             <div>
-              <span class="text-[10px] text-slate-400 block uppercase font-bold">Status Sesi</span>
-              <span id="statusBadge" class="text-sm font-extrabold text-amber-400">BELUM DIMULAI</span>
+              <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Status Sesi</span>
+              <span id="statusBadge" class="text-xs font-black bg-amber-50 text-amber-600 border border-amber-200 px-3 py-1 rounded-full inline-block mt-1">BELUM DIMULAI</span>
             </div>
-            <div class="bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-xl text-center">
-              <span class="text-[9px] text-slate-400 block">SISA WAKTU</span>
-              <span id="adminTimer" class="font-mono text-xl font-black text-amber-400">0s</span>
+            <div class="bg-blue-50 border border-blue-100 px-5 py-2 rounded-2xl text-center min-w-[110px]">
+              <span class="text-[9px] font-bold text-blue-600 block uppercase tracking-wider">Sisa Waktu</span>
+              <span id="adminTimer" class="font-mono text-2xl font-black text-blue-900">0s</span>
             </div>
           </div>
 
           <!-- PERTANYAAN -->
           <div class="mb-6">
-            <h2 id="adminPertanyaan" class="text-2xl md:text-3xl font-black text-white leading-snug">
+            <h2 id="adminPertanyaan" class="text-xl md:text-2xl font-bold text-slate-800 leading-snug">
               Belum ada soal berjalan. Klik "Tombol Lanjut" untuk memulai.
             </h2>
           </div>
 
           <!-- PILIHAN JAWABAN (A-E) -->
-          <div class="grid grid-cols-2 gap-3 text-sm font-semibold">
-            <div id="optA" class="p-3 bg-slate-900/60 border border-slate-700/80 rounded-xl text-slate-300">
-              <b class="text-amber-400">a.</b> <span id="txtA">-</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-medium">
+            <div id="optA" class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-700 transition">
+              <b class="text-blue-600 mr-1">a.</b> <span id="txtA">-</span>
             </div>
-            <div id="optB" class="p-3 bg-slate-900/60 border border-slate-700/80 rounded-xl text-slate-300">
-              <b class="text-amber-400">b.</b> <span id="txtB">-</span>
+            <div id="optB" class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-700 transition">
+              <b class="text-blue-600 mr-1">b.</b> <span id="txtB">-</span>
             </div>
-            <div id="optC" class="p-3 bg-slate-900/60 border border-slate-700/80 rounded-xl text-slate-300">
-              <b class="text-amber-400">c.</b> <span id="txtC">-</span>
+            <div id="optC" class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-700 transition">
+              <b class="text-blue-600 mr-1">c.</b> <span id="txtC">-</span>
             </div>
-            <div id="optD" class="p-3 bg-slate-900/60 border border-slate-700/80 rounded-xl text-slate-300">
-              <b class="text-amber-400">d.</b> <span id="txtD">-</span>
+            <div id="optD" class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-700 transition">
+              <b class="text-blue-600 mr-1">d.</b> <span id="txtD">-</span>
             </div>
-            <div id="optE" class="col-span-2 p-3 bg-slate-900/60 border border-slate-700/80 rounded-xl text-slate-300">
-              <b class="text-amber-400">e.</b> <span id="txtE">-</span>
+            <div id="optE" class="md:col-span-2 p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-700 transition">
+              <b class="text-blue-600 mr-1">e.</b> <span id="txtE">-</span>
             </div>
           </div>
         </div>
 
         <!-- FOOTER CARD SOAL: INFO & TOMBOL LANJUT DI KANAN BAWAH -->
-        <div class="flex justify-between items-center pt-6 mt-4 border-t border-slate-700/60">
-          <span id="infoPenilaian" class="text-xs text-slate-400 italic">Siap merilis soal...</span>
-          <button onclick="lanjutkanSoal()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-6 py-3 rounded-xl shadow-lg transition text-sm flex items-center gap-2">
-            <span> Tombol Lanjut (Soal Berikutnya)</span> ▶️
+        <div class="flex flex-wrap justify-between items-center pt-6 mt-6 border-t border-slate-100 gap-3">
+          <span id="infoPenilaian" class="text-xs text-slate-500 font-medium italic">Siap merilis soal...</span>
+          <button onclick="lanjutkanSoal()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg shadow-emerald-500/20 transition text-sm flex items-center gap-2 active:scale-95">
+            <span>Tombol Lanjut (Soal Berikutnya)</span> ▶️
           </button>
         </div>
       </div>
 
       <!-- CARD KANAN: DAFTAR PESERTA -->
-      <div class="lg:col-span-1 bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col">
-        <div class="pb-3 mb-3 border-b border-slate-700 flex justify-between items-center">
+      <div class="lg:col-span-1 bg-white p-5 rounded-3xl border border-blue-100 shadow-xl shadow-blue-500/5 flex flex-col">
+        <div class="pb-3 mb-3 border-b border-slate-100 flex justify-between items-center">
           <div>
-            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider">Daftar Peserta (Online)</h2>
+            <h2 class="text-sm font-bold text-blue-900 uppercase tracking-wider">Daftar Peserta (Online)</h2>
             <p class="text-[10px] text-slate-400">Urutan otomatis dari skor tertinggi</p>
           </div>
+          <span class="text-xs bg-blue-50 text-blue-600 border border-blue-100 font-bold px-2.5 py-0.5 rounded-full" id="pesertaCount">0</span>
         </div>
 
-        <div id="containerLeaderboard" class="space-y-2 overflow-y-auto max-h-[350px] pr-1 flex-1">
-          <p class="text-xs text-slate-500 text-center py-4">Belum ada peserta bergabung.</p>
+        <div id="containerLeaderboard" class="space-y-2 overflow-y-auto max-h-[360px] pr-1 flex-1">
+          <p class="text-xs text-slate-400 text-center py-6">Belum ada peserta bergabung.</p>
         </div>
       </div>
 
     </div>
 
     <!-- AREA BAWAH (LEBAR): FORM TAMBAH/EDIT SOAL & BANK SOAL -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       <!-- FORM TAMBAH / EDIT SOAL -->
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+      <div class="bg-white p-6 rounded-3xl border border-blue-100 shadow-xl shadow-blue-500/5 space-y-4">
         <div class="flex justify-between items-center">
-          <h2 id="titleFormSoal" class="text-sm font-bold text-amber-400 uppercase tracking-wider">Tambah Soal</h2>
-          <button type="button" id="btnBatalEdit" onclick="batalEditSoal()" class="hidden text-[10px] bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded-lg">
+          <h2 id="titleFormSoal" class="text-sm font-bold text-blue-900 uppercase tracking-wider flex items-center gap-2">
+            <span>➕</span> Tambah Soal Baru
+          </h2>
+          <button type="button" id="btnBatalEdit" onclick="batalEditSoal()" class="hidden text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2.5 py-1 rounded-lg">
             ✖ Batal Edit
           </button>
         </div>
 
-        <form onsubmit="simpanSoal(event)" class="space-y-3">
+        <form onsubmit="simpanSoal(event)" class="space-y-3.5">
           <input type="hidden" id="editSoalKey" value="">
 
           <div>
-            <label class="text-[11px] text-slate-400 block mb-1 font-semibold">Pertanyaan</label>
-            <textarea id="inpPertanyaan" required placeholder="Tulis pertanyaan di sini..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none" rows="2"></textarea>
+            <label class="text-[11px] text-slate-500 block mb-1 font-bold uppercase tracking-wider">Pertanyaan</label>
+            <textarea id="inpPertanyaan" required placeholder="Tulis pertanyaan di sini (dukung Latex/MathJax)..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition" rows="2.5"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-[11px] text-amber-400 font-bold block mb-1">Opsi A</label>
-              <input type="text" id="inpA" required placeholder="Jawaban A" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <label class="text-[11px] text-blue-600 font-bold block mb-1">Opsi A</label>
+              <input type="text" id="inpA" required placeholder="Jawaban A" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition">
             </div>
             <div>
-              <label class="text-[11px] text-amber-400 font-bold block mb-1">Opsi B</label>
-              <input type="text" id="inpB" required placeholder="Jawaban B" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <label class="text-[11px] text-blue-600 font-bold block mb-1">Opsi B</label>
+              <input type="text" id="inpB" required placeholder="Jawaban B" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition">
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-[11px] text-amber-400 font-bold block mb-1">Opsi C</label>
-              <input type="text" id="inpC" required placeholder="Jawaban C" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <label class="text-[11px] text-blue-600 font-bold block mb-1">Opsi C</label>
+              <input type="text" id="inpC" required placeholder="Jawaban C" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition">
             </div>
             <div>
-              <label class="text-[11px] text-amber-400 font-bold block mb-1">Opsi D</label>
-              <input type="text" id="inpD" required placeholder="Jawaban D" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <label class="text-[11px] text-blue-600 font-bold block mb-1">Opsi D</label>
+              <input type="text" id="inpD" required placeholder="Jawaban D" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition">
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] text-amber-400 font-bold block mb-1">Opsi E</label>
-            <input type="text" id="inpE" required placeholder="Jawaban E" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+            <label class="text-[11px] text-blue-600 font-bold block mb-1">Opsi E</label>
+            <input type="text" id="inpE" required placeholder="Jawaban E" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none transition">
           </div>
 
           <div class="grid grid-cols-4 gap-2 pt-1">
             <div>
-              <label class="text-[10px] text-slate-400 block mb-0.5">Kunci</label>
-              <select id="inpKunci" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-amber-400 font-bold focus:border-amber-400 focus:outline-none">
+              <label class="text-[10px] text-slate-500 font-bold block mb-0.5">Kunci</label>
+              <select id="inpKunci" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs text-blue-700 font-extrabold focus:border-blue-500 focus:outline-none">
                 <option value="a">A</option>
                 <option value="b">B</option>
                 <option value="c">C</option>
@@ -190,30 +203,36 @@
               </select>
             </div>
             <div>
-              <label class="text-[10px] text-slate-400 block mb-0.5">Timer (S)</label>
-              <input type="number" id="inpTimer" value="30" min="5" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <label class="text-[10px] text-slate-500 font-bold block mb-0.5">Timer (S)</label>
+              <input type="number" id="inpTimer" value="30" min="5" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs text-slate-800 font-bold focus:border-blue-500 focus:outline-none">
             </div>
             <div>
-              <label class="text-[10px] text-emerald-400 font-bold block mb-0.5">Poin Benar</label>
-              <input type="number" id="inpPoin" value="10" min="0" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-emerald-400 font-bold focus:border-amber-400 focus:outline-none">
+              <label class="text-[10px] text-emerald-600 font-bold block mb-0.5">Poin Benar</label>
+              <input type="number" id="inpPoin" value="10" min="0" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs text-emerald-600 font-bold focus:border-blue-500 focus:outline-none">
             </div>
             <div>
-              <label class="text-[10px] text-rose-400 font-bold block mb-0.5">Poin Salah</label>
-              <input type="number" id="inpPoinSalah" value="0" min="0" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-rose-400 font-bold focus:border-amber-400 focus:outline-none" placeholder="0">
+              <label class="text-[10px] text-rose-500 font-bold block mb-0.5">Poin Salah</label>
+              <input type="number" id="inpPoinSalah" value="0" min="0" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs text-rose-500 font-bold focus:border-blue-500 focus:outline-none" placeholder="0">
             </div>
           </div>
 
-          <button type="submit" id="btnSubmitSoal" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2.5 rounded-xl transition text-xs shadow-md mt-2">
+          <button type="submit" id="btnSubmitSoal" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md shadow-blue-500/20 mt-2">
             ➕ SIMPAN SOAL BARU
           </button>
         </form>
       </div>
 
       <!-- BANK SOAL TERSIMPAN -->
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-3">
-        <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Bank Soal Tersimpan</h2>
-        <div id="containerSoal" class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-          <p class="text-xs text-slate-500 text-center py-4">Memuat bank soal...</p>
+      <div class="bg-white p-6 rounded-3xl border border-blue-100 shadow-xl shadow-blue-500/5 space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-sm font-bold text-blue-900 uppercase tracking-wider flex items-center gap-2">
+            <span>📚</span> Bank Soal Tersimpan
+          </h2>
+          <span class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-0.5 rounded-full" id="soalCount">0 Soal</span>
+        </div>
+        
+        <div id="containerSoal" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
+          <p class="text-xs text-slate-400 text-center py-6">Memuat bank soal...</p>
         </div>
       </div>
 
@@ -233,6 +252,7 @@
     let isEvaluated = false;
     let currentSoalAktif = null;
     let serverTimeOffset = 0; // Selisih waktu Admin dengan Server Firebase
+    let soundDetikPlayed = {}; // Tracker agar suara hanya terpicu sekali per detik pada 5 detik terakhir
 
     const DEFAULT_PASS = "admin123"; 
 
@@ -249,6 +269,14 @@
         masukKeDashboard();
       }
     });
+
+    function playSoundDetik() {
+      const audio = document.getElementById('audioDetik');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Audio play blocked:", e));
+      }
+    }
 
     function verifikasiPassword(e) {
       e.preventDefault();
@@ -299,10 +327,12 @@
     function listenPesertaRealtime() {
       db.ref('peserta').orderByChild('skor').on('value', (snapshot) => {
         const container = document.getElementById('containerLeaderboard');
+        const countSpan = document.getElementById('pesertaCount');
         container.innerHTML = '';
 
         if (!snapshot.exists()) {
-          container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada peserta bergabung.</p>';
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada peserta bergabung.</p>';
+          countSpan.innerText = '0';
           return;
         }
 
@@ -311,20 +341,21 @@
           daftarPeserta.push({ id: child.key, ...child.val() });
         });
 
+        countSpan.innerText = daftarPeserta.length;
         daftarPeserta.reverse();
 
         daftarPeserta.forEach((p, idx) => {
           const div = document.createElement('div');
-          div.className = "bg-slate-900 border border-slate-700/80 rounded-xl p-2.5 flex justify-between items-center";
+          div.className = "bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex justify-between items-center hover:bg-blue-50/50 transition";
           div.innerHTML = `
-            <div class="flex items-center gap-2.5">
-              <span class="w-6 h-6 rounded-full bg-slate-800 text-amber-400 font-bold flex items-center justify-center text-xs border border-slate-700">${idx+1}</span>
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-xl bg-blue-100 text-blue-700 font-black flex items-center justify-center text-xs border border-blue-200">${idx+1}</span>
               <div>
-                <h4 class="text-xs font-bold text-white">${p.nama}</h4>
-                <span class="text-[10px] text-slate-400">Jawaban: <b>${p.jawaban_sementara ? p.jawaban_sementara.toUpperCase() : '-'}</b></span>
+                <h4 class="text-xs font-bold text-slate-800">${p.nama}</h4>
+                <span class="text-[10px] text-slate-400">Jawaban: <b class="text-blue-600">${p.jawaban_sementara ? p.jawaban_sementara.toUpperCase() : '-'}</b></span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-400 font-mono">${p.skor || 0} PTS</span>
+            <span class="text-xs font-black text-blue-700 font-mono bg-blue-100/60 border border-blue-200/60 px-2.5 py-1 rounded-lg">${p.skor || 0} PTS</span>
           `;
           container.appendChild(div);
         });
@@ -347,11 +378,15 @@
 
       const dataSoal = {
         pertanyaan, a, b, c, d, e: eOpt,
-        jawaban_benar, timer, poin_benar, poin_salah
+        jawaban_benar, timer, poin_benar, poin_salah,
+        is_active: true // default aktif saat dibuat
       };
 
       if (editKey) {
-        db.ref('soal/' + editKey).update(dataSoal).then(() => {
+        db.ref('soal/' + editKey).update({
+          pertanyaan, a, b, c, d, e: eOpt,
+          jawaban_benar, timer, poin_benar, poin_salah
+        }).then(() => {
           alert("Soal berhasil diperbarui!");
           batalEditSoal();
         });
@@ -379,18 +414,18 @@
         document.getElementById('inpPoin').value = s.poin_benar;
         document.getElementById('inpPoinSalah').value = s.poin_salah || 0;
 
-        document.getElementById('titleFormSoal').innerText = "✏️ Edit Soal";
+        document.getElementById('titleFormSoal').innerHTML = "<span>✏️️</span> Edit Soal";
         document.getElementById('btnSubmitSoal').innerText = "💾 SIMPAN PERUBAHAN";
-        document.getElementById('btnSubmitSoal').className = "w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-2.5 rounded-xl transition text-xs shadow-md mt-2";
+        document.getElementById('btnSubmitSoal').className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md mt-2";
         document.getElementById('btnBatalEdit').classList.remove('hidden');
       });
     }
 
     function batalEditSoal() {
       document.getElementById('editSoalKey').value = "";
-      document.getElementById('titleFormSoal').innerText = "Tambah Soal";
+      document.getElementById('titleFormSoal').innerHTML = "<span>➕</span> Tambah Soal Baru";
       document.getElementById('btnSubmitSoal').innerText = "➕ SIMPAN SOAL BARU";
-      document.getElementById('btnSubmitSoal').className = "w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2.5 rounded-xl transition text-xs shadow-md mt-2";
+      document.getElementById('btnSubmitSoal').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md shadow-blue-500/20 mt-2";
       document.getElementById('btnBatalEdit').classList.add('hidden');
       resetFormSoal();
     }
@@ -407,46 +442,69 @@
       document.getElementById('inpPoinSalah').value = '0';
     }
 
+    function toggleStatusSoal(key, statusSaatIni) {
+      db.ref('soal/' + key).update({
+        is_active: !statusSaatIni
+      });
+    }
+
     function listenBankSoal() {
       db.ref('soal').on('value', (snapshot) => {
         const container = document.getElementById('containerSoal');
+        const countSpan = document.getElementById('soalCount');
         container.innerHTML = '';
 
         if (!snapshot.exists()) {
-          container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Belum ada soal tersimpan.</p>';
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada soal tersimpan.</p>';
+          countSpan.innerText = '0 Soal';
           return;
         }
 
         let i = 1;
+        let totalSoal = 0;
         snapshot.forEach(child => {
+          totalSoal++;
           const s = child.val();
           const key = child.key;
+          const isActive = s.is_active !== false; // default true jika undefined
 
           const div = document.createElement('div');
-          div.className = "bg-slate-900 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center gap-3";
+          div.className = `p-3 rounded-2xl border transition flex flex-col gap-2 ${isActive ? 'bg-slate-50 border-slate-200' : 'bg-slate-100/70 border-slate-200 opacity-60'}`;
           div.innerHTML = `
-            <div class="space-y-0.5">
-              <span class="text-[9px] bg-slate-800 text-amber-400 border border-slate-700 px-1.5 py-0.5 rounded font-bold">#${i}</span>
-              <p class="text-xs font-bold text-slate-200 line-clamp-1">${s.pertanyaan}</p>
-              <div class="text-[10px] text-slate-400 gap-2 flex flex-wrap">
-                <span>Kunci: <b class="text-amber-400 uppercase">${s.jawaban_benar}</b></span>
-                <span>• Timer: <b>${s.timer}s</b></span>
-                <span>• Benar: <b class="text-emerald-400">+${s.poin_benar}</b></span>
-                <span>• Salah: <b class="text-rose-400">-${s.poin_salah || 0}</b></span>
+            <div class="flex justify-between items-start gap-2">
+              <div class="flex items-start gap-2">
+                <span class="text-[9px] ${isActive ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-slate-200 text-slate-600 border-slate-300'} border px-1.5 py-0.5 rounded-md font-extrabold shrink-0 mt-0.5">#${i}</span>
+                <p class="text-xs font-bold text-slate-800 line-clamp-2">${s.pertanyaan}</p>
               </div>
+              
+              <!-- TOGGLE AKTIF / NONAKTIF -->
+              <button onclick="toggleStatusSoal('${key}', ${isActive})" title="${isActive ? 'Klik untuk Nonaktifkan' : 'Klik untuk Aktifkan'}" class="shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-black border transition flex items-center gap-1 ${isActive ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100' : 'bg-slate-200 text-slate-500 border-slate-300 hover:bg-slate-300'}">
+                <span>${isActive ? '🟢 AKTIF' : '⚪ NONAKTIF'}</span>
+              </button>
             </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button onclick="editSoal('${key}')" title="Edit Soal" class="text-amber-400 hover:text-amber-300 p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs">
-                ✏️
-              </button>
-              <button onclick="hapusSoal('${key}')" title="Hapus Soal" class="text-rose-400 hover:text-rose-300 p-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs">
-                🗑️
-              </button>
+
+            <div class="flex justify-between items-center pt-1 border-t border-slate-200/60 text-[10px] text-slate-500">
+              <div class="flex flex-wrap gap-2">
+                <span>Kunci: <b class="text-blue-600 uppercase">${s.jawaban_benar}</b></span>
+                <span>• Timer: <b>${s.timer}s</b></span>
+                <span>• Benar: <b class="text-emerald-600">+${s.poin_benar}</b></span>
+                <span>• Salah: <b class="text-rose-500">-${s.poin_salah || 0}</b></span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0 ml-2">
+                <button onclick="editSoal('${key}')" title="Edit Soal" class="text-amber-600 hover:text-amber-700 p-1 bg-white hover:bg-amber-50 border border-slate-200 rounded-lg text-xs transition">
+                  ✏️
+                </button>
+                <button onclick="hapusSoal('${key}')" title="Hapus Soal" class="text-rose-500 hover:text-rose-600 p-1 bg-white hover:bg-rose-50 border border-slate-200 rounded-lg text-xs transition">
+                  🗑️️
+                </button>
+              </div>
             </div>
           `;
           container.appendChild(div);
           i++;
         });
+
+        countSpan.innerText = `${totalSoal} Soal`;
 
         if (window.MathJax && window.MathJax.typesetPromise) {
           MathJax.typesetPromise();
@@ -472,15 +530,27 @@
           listSoal.push({ key: child.key, ...child.val() });
         });
 
+        // Filter HANYA soal yang AKTIF
+        const listSoalAktif = listSoal.filter(s => s.is_active !== false);
+
+        if (listSoalAktif.length === 0) {
+          alert("⚠️ Semua soal saat ini berstatus NONAKTIF!\nSilakan aktifkan minimal 1 soal terlebih dahulu.");
+          return;
+        }
+
         db.ref('kuis_aktif').once('value', (sAktif) => {
           const activeData = sAktif.val();
           let nextIndex = 0;
 
-          if (activeData && activeData.soalIndex !== undefined) {
-            nextIndex = (activeData.soalIndex + 1) % listSoal.length;
+          if (activeData && activeData.soalKey) {
+            // Cari posisi soal aktif saat ini di daftar soal aktif
+            const currentIndex = listSoalAktif.findIndex(s => s.key === activeData.soalKey);
+            if (currentIndex !== -1) {
+              nextIndex = (currentIndex + 1) % listSoalAktif.length;
+            }
           }
 
-          const selectedSoal = listSoal[nextIndex];
+          const selectedSoal = listSoalAktif[nextIndex];
           currentSoalAktif = selectedSoal;
           isEvaluated = false;
 
@@ -491,12 +561,12 @@
               });
             }
 
-            // Gunakan Waktu Server Firebase untuk timestamp
+            // Waktu Server Firebase untuk timestamp
             const serverNow = Date.now() + serverTimeOffset;
 
             db.ref('kuis_aktif').set({
               status: 'mulai_soal',
-              soalIndex: nextIndex,
+              soalKey: selectedSoal.key,
               soal: { ...selectedSoal, timestamp: serverNow }
             });
           });
@@ -509,7 +579,7 @@
         const val = snapshot.val();
         if (!val || val.status !== 'mulai_soal' || !val.soal) {
           document.getElementById('statusBadge').innerText = "BELUM DIMULAI";
-          document.getElementById('statusBadge').className = "text-sm font-extrabold text-amber-400";
+          document.getElementById('statusBadge').className = "text-xs font-black bg-amber-50 text-amber-600 border border-amber-200 px-3 py-1 rounded-full inline-block mt-1";
           document.getElementById('adminTimer').innerText = "0s";
           clearInterval(timerInterval);
           return;
@@ -536,13 +606,14 @@
 
     function startAdminTimer(startTimestamp, durasiSoal) {
       clearInterval(timerInterval);
+      soundDetikPlayed = {}; // reset tracker sound
 
       const statusBadge = document.getElementById('statusBadge');
       const timerDisplay = document.getElementById('adminTimer');
       const infoPenilaian = document.getElementById('infoPenilaian');
 
       statusBadge.innerText = "BERJALAN";
-      statusBadge.className = "text-sm font-extrabold text-emerald-400";
+      statusBadge.className = "text-xs font-black bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1 rounded-full inline-block mt-1";
 
       const updateTimer = () => {
         // Menggunakan waktu presisi Server Firebase
@@ -553,10 +624,17 @@
         if (remaining > 0) {
           timerDisplay.innerText = remaining + "s";
           infoPenilaian.innerText = "Peserta sedang menjawab...";
+
+          // JALANKAN SOUND detik.mp3 PADA 5 DETIK TERAKHIR
+          if (remaining <= 5 && !soundDetikPlayed[remaining]) {
+            soundDetikPlayed[remaining] = true;
+            playSoundDetik();
+          }
+
         } else {
           timerDisplay.innerText = "0s";
           statusBadge.innerText = "EVALUASI";
-          statusBadge.className = "text-sm font-extrabold text-rose-400";
+          statusBadge.className = "text-xs font-black bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1 rounded-full inline-block mt-1";
           clearInterval(timerInterval);
 
           if (!isEvaluated) {
