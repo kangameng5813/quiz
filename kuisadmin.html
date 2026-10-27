@@ -24,6 +24,8 @@
   <audio id="audioMulai" src="mulai_soal.mp3" preload="auto"></audio>
   <!-- Audio: peringatan kuis berakhir (5 detik), diputar sebelum detik.mp3 -->
   <audio id="audioBerakhir" src="kuis_berakhir.mp3" preload="auto"></audio>
+  <!-- Audio: backsound berulang sejak tombol Lanjut diklik sampai detik.mp3 terakhir berbunyi -->
+  <audio id="audioBacksound" src="backsound.mp3" preload="auto" loop></audio>
 
   <!-- ==================== MODAL/SCREEN LOGIN ADMIN ==================== -->
   <div id="screenLoginAdmin" class="fixed inset-0 bg-blue-950/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -91,6 +93,13 @@
               <span class="text-[9px] font-bold text-blue-600 block uppercase tracking-wider">Sisa Waktu</span>
               <span id="adminTimer" class="font-mono text-2xl font-black text-blue-900">0s</span>
             </div>
+          </div>
+
+          <!-- BANNER KUIS SELESAI -->
+          <div id="bannerSelesai" class="hidden mb-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 text-center">
+            <div class="text-3xl mb-1">🏁</div>
+            <h3 class="text-lg font-black text-emerald-700">KUIS SELESAI</h3>
+            <p class="text-xs text-emerald-600 font-medium">Semua soal aktif sudah selesai dijawab. Lihat peringkat akhir di daftar peserta.</p>
           </div>
 
           <!-- PERTANYAAN -->
@@ -258,6 +267,7 @@
     let serverTimeOffset = 0;      // Selisih waktu Admin dengan Server Firebase
     let soundDetikPlayed = {};     // Tracker agar suara hanya terpicu sekali per detik pada 5 detik terakhir
     let soundBerakhirPlayed = false; // Tracker agar kuis_berakhir.mp3 hanya diputar sekali per soal
+    const VOLUME_BACKSOUND = 0.4;    // Volume backsound (0.0 - 1.0), ubah sesuai selera
 
     // ===== PENGATURAN SUARA PEMBUKA =====
     const DURASI_INTRO = 10;       // detik: lama suara pembuka sebelum soal muncul
@@ -303,6 +313,49 @@
         audio.pause();
         audio.currentTime = 0;
       }
+    }
+
+    // Backsound: berulang terus sejak tombol Lanjut diklik, berhenti saat detik.mp3 terakhir berbunyi
+    function playBacksound() {
+      const audio = document.getElementById('audioBacksound');
+      if (audio) {
+        audio.loop = true;
+        audio.volume = VOLUME_BACKSOUND;
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Backsound diblokir:", e));
+      }
+    }
+
+    function stopBacksound() {
+      const audio = document.getElementById('audioBacksound');
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+
+    // Cek apakah soalKey adalah soal AKTIF yang terakhir di bank soal
+    function cekSoalTerakhir(soalKey, callback) {
+      db.ref('soal').once('value', (snapshot) => {
+        const listAktif = [];
+        snapshot.forEach(child => {
+          if (child.val().is_active !== false) listAktif.push(child.key);
+        });
+        callback(listAktif.length > 0 && listAktif[listAktif.length - 1] === soalKey);
+      });
+    }
+
+    function tampilkanKuisSelesai() {
+      const statusBadge = document.getElementById('statusBadge');
+      statusBadge.innerText = "🏁 KUIS SELESAI";
+      statusBadge.className = "text-xs font-black bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1 rounded-full inline-block mt-1";
+      document.getElementById('bannerSelesai').classList.remove('hidden');
+      document.getElementById('infoPenilaian').innerText = "🏁 Kuis selesai! Semua soal aktif telah dijawab.";
+      stopBacksound();
+    }
+
+    function sembunyikanKuisSelesai() {
+      document.getElementById('bannerSelesai').classList.add('hidden');
     }
 
     function verifikasiPassword(e) {
@@ -578,6 +631,11 @@
             // Cari posisi soal aktif saat ini di daftar soal aktif
             const currentIndex = listSoalAktif.findIndex(s => s.key === activeData.soalKey);
             if (currentIndex !== -1) {
+              // Sudah di soal aktif terakhir -> konfirmasi sebelum mengulang dari soal pertama
+              if (currentIndex === listSoalAktif.length - 1) {
+                const ulang = confirm("🏁 Ini sudah soal aktif yang terakhir.\nMulai ulang kuis dari soal pertama?\n\n(Skor peserta tidak direset. Gunakan tombol 'Reset Peserta' untuk memulai dari nol.)");
+                if (!ulang) return;
+              }
               nextIndex = (currentIndex + 1) % listSoalAktif.length;
             }
           }
@@ -587,6 +645,8 @@
           isIntro = true;
           document.getElementById('btnLanjut').disabled = true;
           stopSoundBerakhir(); // hentikan suara soal sebelumnya jika masih berbunyi
+          sembunyikanKuisSelesai();
+          playBacksound();     // backsound berulang sampai detik.mp3 terakhir berbunyi
 
           db.ref('peserta').once('value', (pSnap) => {
             if (pSnap.exists()) {
@@ -720,10 +780,16 @@
           if (remaining <= 5 && !soundDetikPlayed[remaining]) {
             soundDetikPlayed[remaining] = true;
             playSoundDetik();
+
+            // BERHENTIKAN BACKSOUND SAAT detik.mp3 TERAKHIR BERBUNYI
+            if (remaining === 1) {
+              stopBacksound();
+            }
           }
 
         } else {
           timerDisplay.innerText = "0s";
+          stopBacksound(); // pengaman jika detik terakhir terlewat
           statusBadge.innerText = "EVALUASI";
           statusBadge.className = "text-xs font-black bg-rose-50 text-rose-600 border border-rose-200 px-3 py-1 rounded-full inline-block mt-1";
           clearInterval(timerInterval);
@@ -732,9 +798,20 @@
             isEvaluated = true;
             infoPenilaian.innerText = "⏳ Menghitung skor peserta...";
             // Jeda 3.5 detik untuk memastikan semua jawaban Client sudah terkirim via internet
+            const soalKeyDievaluasi = currentSoalAktif ? currentSoalAktif.key : null;
             setTimeout(() => {
               evaluasiJawaban();
               infoPenilaian.innerText = "✅ Skor peserta berhasil diperbarui!";
+
+              // Jika ini soal aktif terakhir, tampilkan keterangan KUIS SELESAI
+              if (soalKeyDievaluasi) {
+                cekSoalTerakhir(soalKeyDievaluasi, (terakhir) => {
+                  // pastikan admin belum pindah ke soal lain selama jeda
+                  if (terakhir && !isIntro && currentSoalAktif && currentSoalAktif.key === soalKeyDievaluasi) {
+                    tampilkanKuisSelesai();
+                  }
+                });
+              }
             }, 3500);
           }
         }
@@ -781,6 +858,8 @@
         isIntro = false;
         document.getElementById('btnLanjut').disabled = false;
         stopSoundBerakhir();
+        stopBacksound();
+        sembunyikanKuisSelesai();
 
         db.ref('peserta').remove();
         db.ref('kuis_aktif').remove();
