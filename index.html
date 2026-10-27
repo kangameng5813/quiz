@@ -40,9 +40,9 @@
 
     <!-- LOBBY -->
     <div id="screenLobby" class="hidden bg-white rounded-2xl p-8 border border-slate-200 text-center shadow-xl">
-      <div class="text-3xl mb-2">⏳</div>
+      <div id="lobbyIcon" class="text-3xl mb-2">⏳</div>
       <h2 class="text-lg font-extrabold text-indigo-600 mb-1">Halo, <span id="displayName" class="text-slate-900">Peserta</span>!</h2>
-      <p class="text-slate-500 text-xs mb-4">Menunggu Admin merilis soal berikutnya...</p>
+      <p id="teksLobby" class="text-slate-500 text-xs mb-4">Menunggu Admin merilis soal berikutnya...</p>
       <div class="bg-slate-100 p-3 rounded-xl inline-block border border-slate-200">
         <span class="text-[10px] text-slate-500 block font-semibold">Skor Anda</span>
         <span id="displaySkorLobby" class="text-xl font-black text-amber-500">0</span>
@@ -51,13 +51,13 @@
 
     <!-- SOAL & JAWABAN CLIENT -->
     <div id="screenSoal" class="hidden bg-white rounded-2xl p-5 border border-slate-200 shadow-xl relative overflow-hidden">
-      
+
       <!-- NOTIFIKASI POPUP HASIL (BENAR/SALAH) -->
       <div id="notifHasil" class="hidden absolute inset-0 bg-white/95 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center animate-pop-in">
         <div id="notifIcon" class="text-6xl mb-2">🎉</div>
         <h3 id="notifJudul" class="text-2xl font-black mb-1 text-emerald-600">JAWABAN BENAR!</h3>
         <p id="notifPesan" class="text-xs text-slate-600 mb-4">Anda berhasil mendapatkan poin.</p>
-        
+
         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 w-full max-w-xs space-y-2 mb-4">
           <div class="flex justify-between items-center text-xs">
             <span class="text-slate-500">Kunci Jawaban:</span>
@@ -150,13 +150,16 @@
     let db = null;
     let pesertaId = localStorage.getItem('kuis_peserta_id') || null;
     let pesertaNama = localStorage.getItem('kuis_peserta_nama') || '';
-    let selectedJawaban = null; 
+    let selectedJawaban = null;
     let monitorTimerInterval = null;
     let currentTimestampSoal = null;
     let isTimeUp = false;
     let currentSoalData = null;
     let lastSkor = 0;
     let serverTimeOffset = 0;
+
+    const TEKS_LOBBY_DEFAULT = "Menunggu Admin merilis soal berikutnya...";
+    const TEKS_LOBBY_PERSIAPAN = "🔊 Bersiap... soal berikutnya segera muncul!";
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -209,26 +212,31 @@
       localStorage.removeItem('kuis_peserta_nama');
       pesertaId = null;
       pesertaNama = '';
-      
+
       document.getElementById('screenLobby').classList.add('hidden');
       document.getElementById('screenSoal').classList.add('hidden');
       document.getElementById('screenLogin').classList.remove('hidden');
       document.getElementById('inpNama').value = '';
     }
 
+    function setTeksLobby(persiapan) {
+      document.getElementById('teksLobby').innerText = persiapan ? TEKS_LOBBY_PERSIAPAN : TEKS_LOBBY_DEFAULT;
+      document.getElementById('lobbyIcon').innerText = persiapan ? '🔊' : '⏳';
+    }
+
     function listenSkorPeserta() {
       if (!pesertaId) return;
-      
+
       db.ref('peserta/' + pesertaId).on('value', (snapshot) => {
         const data = snapshot.val();
-        
+
         if (!data) {
           tampilkanLogin();
           return;
         }
 
         const newSkor = data.skor || 0;
-        
+
         if (!document.getElementById('notifHasil').classList.contains('hidden')) {
           document.getElementById('notifTotalSkor').innerText = newSkor;
         }
@@ -242,16 +250,29 @@
     function listenSesiKuis() {
       db.ref('kuis_aktif').on('value', (snapshot) => {
         const val = snapshot.val();
+
+        // --- Fase persiapan: admin sedang memutar suara pembuka (10 detik) ---
+        if (val && val.status === 'persiapan') {
+          clearInterval(monitorTimerInterval);
+          setTeksLobby(true);
+          if (pesertaId) tampilkanLobby();
+          return;
+        }
+
+        setTeksLobby(false);
+
+        // --- Belum ada soal berjalan ---
         if (!val || val.status !== 'mulai_soal' || !val.soal) {
           clearInterval(monitorTimerInterval);
           if (pesertaId) tampilkanLobby();
           return;
         }
 
+        // --- Soal baru dirilis ---
         if (currentTimestampSoal !== val.soal.timestamp) {
           currentTimestampSoal = val.soal.timestamp;
           currentSoalData = val.soal;
-          selectedJawaban = null; 
+          selectedJawaban = null;
           isTimeUp = false;
           resetUIJawaban();
         }
@@ -292,7 +313,7 @@
             disableAllButtons(true);
             document.getElementById('statusJawaban').innerText = "Waktu habis! Menghitung nilai...";
             document.getElementById('statusJawaban').className = "text-center text-[11px] text-rose-600 font-bold";
-            
+
             setTimeout(() => {
               tampilkanNotifikasiHasil();
             }, 2500);
@@ -356,7 +377,7 @@
         notifIcon.innerText = "❌";
         notifJudul.innerText = "JAWABAN SALAH!";
         notifJudul.className = "text-2xl font-black mb-1 text-rose-600";
-        notifPesan.innerText = selectedJawaban 
+        notifPesan.innerText = selectedJawaban
           ? `Anda memilih (${selectedJawaban.toUpperCase()}). Kunci yang benar adalah (${kunci.toUpperCase()}).`
           : `Anda tidak menjawab. Kunci yang benar adalah (${kunci.toUpperCase()}).`;
         notifPoin.innerText = `-${currentSoalData.poin_salah || 0} Poin`;
@@ -385,7 +406,7 @@
       buttons.forEach(key => {
         const btn = document.getElementById('btn' + key.toUpperCase());
         btn.disabled = disabled;
-        if(disabled) {
+        if (disabled) {
           btn.classList.remove('active:scale-95');
         }
       });
